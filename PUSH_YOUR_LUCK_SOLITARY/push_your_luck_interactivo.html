@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Push Your Luck Solitary</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+<style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-image: url("Imagenes/Cartel_Poker.jpg"); 
+      background-size: cover;
+      background-position: center;
+      color: #333;
+    }
+    .game-container {
+      text-align: center;
+      background: #fff; 
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      width: 90%;
+      max-width: 600px;
+    }
+    .stats {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .stats div {
+      font-size: 1.2em;
+    }
+    .card {
+      font-size: 3em;
+      margin: 20px auto;
+      width: 100px;
+      height: 150px;
+      line-height: 150px;
+      border: 2px solid #333;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    .buttons button {
+      padding: 10px;
+      font-size: 1em;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .buttons button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    button#plantarse {
+      grid-column: span 2;
+      background: #e63946;
+      color: #fff;
+    }
+    button:hover:not(:disabled) {
+      background: #a8dadc;
+    }
+</style>
+</head>
+<body>
+  <div class="game-container">
+    <h1>Push Your Luck Solitary</h1>
+      <div class="stats">
+        <div>Vidas: <span id="vidas">3</span></div>
+        <div>Contador: <span id="contador">1</span></div>
+      </div>
+      <div class="card" id="currentCard">3♣</div>
+      <div class="buttons">
+        <button id="alta">ALTA (15)</button>
+        <button id="baja">BAJA (15)</button>
+        <button id="mismoColor">MISMO COLOR (5)</button>
+        <button id="distintoColor">DISTINTO COLOR (5)</button>
+        <button id="sumaMenor">SUMA  11 (10)</button>
+        <button id="comodin">COMODÍN (3)</button>
+        <button id="plantarse">PLANTARSE</button>
+      </div>
+  </div>
+<script src="push_your_luck_solo.js"></script>
+</body>
+</html>
