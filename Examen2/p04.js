@@ -30,5 +30,11 @@ function menor16(a,b,c,d,e,f,g,h,i,j,k,l,o,m,n,o,p)
     return menor4(m1,m2,m3,m4)
 }
 
-console.log(menor16(4,2,-6,20,4,2,-6,20,4,2,-666,20,4,2,-6,20));
- 
+// console.log(menor16(4,2,-6,20,4,2,-6,20,4,2,-666,20,4,2,-6,20));
+
+function menor3(a,b,c)
+{
+    let r1 = menor2(a,b);
+    return menor2(m1,m2);
+
+}
