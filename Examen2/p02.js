@@ -1,7 +1,7 @@
 /*
 2.- Escribe una función llamada invertirArray 
 que reciba un array y devuelva un nuevo array 
-con los elementos en orden inverso, 
+con los elementos en orden inverso,
 sin usar el método reverse(). 
 Ejemplo de entrada: ["a", "b", "c", "d"] 
                     0      1    2   3

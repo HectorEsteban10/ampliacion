@@ -1,7 +1,7 @@
 /*
 7.- Crea un objeto o registro en js que modele un alumno
  conteniendo su nombre, su número de lista y su asignatura. 
- Finalmente imprimelo completamente por consola.
+ Finalmente imprimelo completamente por consola
 
 */
 

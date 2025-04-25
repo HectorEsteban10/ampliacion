@@ -4,7 +4,7 @@ pero siguiendo estas reglas:
 Si el número es múltiplo de 3, imprimir "Fizz".
 Si es múltiplo de 5, imprimir "Buzz".
 Si es múltiplo de ambos, imprimir "FizzBuzz".
-Si no es múltiplo de ninguno, imprimir el número.
+Si no es múltiplo de ninguno, imprimir el número
 
 */
 

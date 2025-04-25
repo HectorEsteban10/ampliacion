@@ -1,7 +1,7 @@
 /*
 4.- Escribe las funciones menor4 y menor16: 
 menor4: recibe como parámetros de entrada 4 números y devuelve el menor de esos cuatro números.
-menor16: recibe como parámetros de entrada 16 números y devuelve el menor de esos 16 números.
+menor16: recibe como parámetros de entrada 16 números y devuelve el menor de esos 16 números
  */
 
 function menor2(a,b) 

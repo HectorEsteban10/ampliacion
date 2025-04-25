@@ -1,7 +1,7 @@
 /*
 
 8.- Escribe la función que devuelva el lanzamiento
- de un dado de 10 caras.
+ de un dado de 10 caras
 
 */
 

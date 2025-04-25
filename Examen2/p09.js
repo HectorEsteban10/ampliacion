@@ -13,7 +13,7 @@
 // javascript que al pulsar al 
 // botón con id=miBoton ponga en 
 // verde el // texto “guay del para” en el 
-// párrafo con id=miParrafo
+// párrafo con id=miParrafos
 </script>
  
 */
