@@ -8,10 +8,34 @@
         canvas
         {
             background: grey;
+            border: 2px solid black;
+            display: block;
+            margin: 0 auto;
         }
     </style>
+
 </head>
 <body>
     <canvas id="gameCanvas" width="800" height="=400"></canvas>
+    
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getConext('2d');
+
+        let player = {
+            x:50,
+            y:150,
+            w:30,
+            h:60
+        };
+
+        function pintarJugador()
+        {
+            ctx.fillStyle = 'red';
+            ctx.fillRect(pl.x,pl.y,pl.w,pl.h);
+        }
+
+        pintarJugador();
+    </script>
 </body>
 </html>
