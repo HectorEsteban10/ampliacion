@@ -13,29 +13,48 @@
             margin: 0 auto;
         }
     </style>
-    h
+
 </head>
 <body>
-    <canvas id="gameCanvas" width="800" height="=400"></canvas>
-    
+    <canvas id="gameCanvas" width="800" height="400"></canvas>
+
+
     <script>
         const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getConext('2d');
+        const ctx = canvas.getContext('2d');
 
-        let player = {
-            x:50,
-            y:150,
+        let p1 = {
+            x: 50,
+            y: 150,
             w:30,
             h:60
         };
+        const diana =
+        {
+            x: 700,
+            y: 150,
+            w:50,
+            h:50,
+            imagen: new Image()
 
-        function pintarJugador()
+        };
+
+        diana.imagen.src = "images/diana.png";
+
+        function pintarJugador() 
         {
             ctx.fillStyle = 'red';
-            ctx.fillRect(pl.x,pl.y,pl.w,pl.h);
+            ctx.fillRect(p1.x,p1.y,p1.w,p1.h);    
         }
-
+        function pintarDiana() 
+        {           
+            ctx.drawImage(diana.imagen,diana.x,diana.y,diana.w,diana.h);  
+        }
         pintarJugador();
+
+        diana.imagen.onload = function (){ pintarDiana() };
+        
+
     </script>
 </body>
 </html>
