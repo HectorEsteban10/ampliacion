@@ -12,12 +12,19 @@
             display: block;
             margin: 0 auto;
         }
+        #b1
+        {
+            display: block;
+            margin: 10px auto;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
     </style>
 
 </head>
 <body>
     <canvas id="gameCanvas" width="800" height="400"></canvas>
-
+    <button id="b1">Disparar</button>
 
     <script>
         const canvas = document.getElementById('gameCanvas');
@@ -42,7 +49,7 @@
         let bala = null;
         let existe_bala = false;
 
-        diana.imagen.src = "diana.png";
+        diana.imagen.src = "images/diana.png";
 
         function pintarJugador() 
         {
@@ -66,6 +73,28 @@
                 ctx.arc(bala.x ,bala.y,6,0,Math.PI*2);
                 //ctx.stroke();
                 ctx.fill();
+
+                // hay colisión con diana
+
+                // ES CENTRO ???????
+                if(
+                    (bala.x>=diana.x+20 &&  bala.x<=diana.x+30)
+                    &&
+                    (bala.y>=diana.y +20 && bala.y <=  diana.y + 30)
+                )
+                {
+                    console.log(100);
+                }
+                else if (
+                    (bala.x>=diana.x && bala.x <= diana.x + diana.w)
+                    &&
+                    (bala.y>=diana.y && bala.y <= diana.y + diana.h)
+                )
+                {
+                    console.log(50);
+                }
+
+                
 
                 // si nos salimos del campo que no haya bala
                 if ((existe_bala) && (bala.x>canvas.width))
@@ -103,6 +132,21 @@
         } );
 
 
+        document.getElementById('b1').addEventListener('click',() =>
+        {
+            if (!existe_bala)
+            {
+                existe_bala=true;
+                bala = {
+                    x:p1.x + p1.w,
+                    y:p1.y,
+                    velocidad:7
+                }
+
+            }    
+        }
+    );
+
         function bucleJuego() 
         {
             ctx.clearRect (0,0,canvas.width,canvas.height);
@@ -116,7 +160,6 @@
 
         // Arranque el juego
         bucleJuego();
-        
 
     </script>
 </body>
