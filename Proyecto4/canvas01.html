@@ -43,7 +43,9 @@
             y: 150,
             w:50,
             h:50,
-            imagen: new Image()
+            imagen: new Image(),
+            es100:false,
+            es50:false
 
         };
         let bala = null;
@@ -58,7 +60,23 @@
         }
         function pintarDiana() 
         {           
-            ctx.drawImage(diana.imagen,diana.x,diana.y,diana.w,diana.h);  
+            if (diana.es100)
+            {
+                ctx.font = '20px Arial';
+                ctx.fillStyle = 'blue';
+                ctx.fillText("100 EBLB", diana.x -25, diana.y - 25);
+            }
+            else if ((diana.es50)&& (!diana.es100))
+            {
+                ctx.font = '15px Arial';
+                ctx.fillStyle = 'red';
+                ctx.fillText("50 EBLB", diana.x -25, diana.y - 25);              
+            }
+            else if ((!diana.es50) && (!diana.es100))
+            {
+                ctx.drawImage(diana.imagen,diana.x,diana.y,diana.w,diana.h);
+            }
+
         }
 
         function pintarBala()
@@ -84,6 +102,7 @@
                 )
                 {
                     console.log(100);
+                    diana.es100=true;
                 }
                 else if (
                     (bala.x>=diana.x && bala.x <= diana.x + diana.w)
@@ -92,6 +111,7 @@
                 )
                 {
                     console.log(50);
+                    diana.es50=true;
                 }
 
                 
