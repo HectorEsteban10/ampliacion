@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escondite Inglés Regular</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+            background-color: #f0f8ff;
+        }
+        h1 {
+            color: #2e8b57;
+        }
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .path {
+            display: flex;
+            flex-direction: column-reverse;
+            border: 2px solid #333;
+            width: 300px;
+            margin: 20px auto;
+            background-color: #fff;
+        }
+        .cell {
+            height: 40px;
+            border-bottom: 1px solid #ccc;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            position: relative;
+        }
+        .cell:last-child {
+            border-bottom: none;
+        }
+        .player {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: white;
+        }
+        .player1 {
+            background-color: #ff5733;
+        }
+        .player2 {
+            background-color: #3399ff;
+        }
+        .player3 {
+            background-color: #33cc33;
+        }
+        .heart {
+            position: absolute;
+            color: red;
+            font-size: 12px;
+            top: 2px;
+        }
+        .controls {
+            margin: 20px;
+        }
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:disabled {
+            background-color: #cccccc;
+        }
+        .bag {
+            margin: 20px;
+            padding: 10px;
+            border: 2px dashed #333;
+            display: inline-block;
+        }
+        .dice {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            margin: 5px;
+            border-radius: 5px;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+        }
+        .black-dice {
+            background-color: #333;
+            color: white;
+        }
+        .red-dice {
+            background-color: #ff3333;
+            color: white;
+        }
+        .log {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            height: 100px;
+            overflow-y: auto;
+            text-align: left;
+            width: 80%;
+            background-color: white;
+        }
+        .player-controls {
+            display: flex;
+            justify-content: space-around;
+            width: 80%;
+            margin: 10px auto;
+        }
+        .player-panel {
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            width: 25%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Escondite Inglés Regular</h1>
+    <p>El primer jugador en llegar o pasar la casilla superior gana.</p>
+    
+    <div class="game-container">
+        <div class="path" id="path">
+            <!-- Las celdas del camino se generarán con JavaScript -->
+        </div>
+        
+        <div class="bag">
+            <h3>Bolsa de dados</h3>
+            <div id="bag-content"></div>
+        </div>
+        
+        <div class="player-controls" id="player-controls">
+            <!-- Los controles de los jugadores se generarán con JavaScript -->
+        </div>
+        
+        <div class="controls">
+            <button id="next-turn" disabled>Siguiente turno</button>
+        </div>
+        
+        <div class="log" id="game-log">
+            <p>¡El juego ha comenzado! Todos los jugadores comienzan en la posición inicial.</p>
+        </div>
+    </div>
+
+    <script>
+        // Configuración del juego
+        const CELL_COUNT = 10;
+        const PLAYER_COUNT = 3;
+        const DICE_CONFIG = {
+            black1: [1, 1, 1, 1, 2, 2],
+            black2: [1, 1, 1, 1, 0, 0],
+            black3: [1, 1, 0, 0, 0, 0],
+            red: [1, 1, 1, 1, 1, 0]
+        };
+        
+        // Estado del juego
+        let gameState = {
+            players: [],
+            currentTurn: 0,
+            bag: ['black1', 'black2', 'black3', 'red'],
+            drawnDice: [],
+            usedBlackDice: [],
+            gameOver: false
+        };
+        
+        // Inicializar el juego
+        function initGame() {
+            // Crear jugadores
+            for (let i = 0; i < PLAYER_COUNT; i++) {
+                gameState.players.push({
+                    position: 0,
+                    hasHeart: false,
+                    action: null, // 'walk' or 'stop'
+                    color: i === 0 ? 'player1' : i === 1 ? 'player2' : 'player3',
+                    name: `Jugador ${i+1}`
+                });
+            }
+            
+            // Crear el camino
+            const path = document.getElementById('path');
+            path.innerHTML = '';
+            for (let i = 0; i < CELL_COUNT; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.id = `cell-${i}`;
+                path.appendChild(cell);
+            }
+            
+            // Crear controles de jugadores
+            createPlayerControls();
+            
+            // Actualizar la vista
+            updateView();
+        }
+        
+        // Crear controles para los jugadores
+        function createPlayerControls() {
+            const controlsContainer = document.getElementById('player-controls');
+            controlsContainer.innerHTML = '';
+            
+            gameState.players.forEach((player, index) => {
+                const panel = document.createElement('div');
+                panel.className = 'player-panel';
+                
+                const playerName = document.createElement('h4');
+                playerName.textContent = player.name;
+                playerName.style.color = player.color === 'player1' ? '#ff5733' : 
+                                        player.color === 'player2' ? '#3399ff' : '#33cc33';
+                panel.appendChild(playerName);
+                
+                const walkBtn = document.createElement('button');
+                walkBtn.textContent = 'Andar';
+                walkBtn.onclick = () => setPlayerAction(index, 'walk');
+                panel.appendChild(walkBtn);
+                
+                const stopBtn = document.createElement('button');
+                stopBtn.textContent = 'Pararse';
+                stopBtn.onclick = () => setPlayerAction(index, 'stop');
+                panel.appendChild(stopBtn);
+                
+                const status = document.createElement('p');
+                status.id = `player-status-${index}`;
+                panel.appendChild(status);
+                
+                controlsContainer.appendChild(panel);
+            });
+        }
+        
+        // Establecer la acción de un jugador
+        function setPlayerAction(playerIndex, action) {
+            if (gameState.gameOver) return;
+            
+            gameState.players[playerIndex].action = action;
+            document.querySelectorAll('#player-controls button').forEach(btn => {
+                btn.disabled = true;
+            });
+            
+            // Verificar si todos los jugadores han elegido acción
+            const allPlayersReady = gameState.players.every(p => p.action !== null);
+            document.getElementById('next-turn').disabled = !allPlayersReady;
+            
+            updatePlayerStatus(playerIndex);
+        }
+        
+        // Actualizar el estado del jugador en la UI
+        function updatePlayerStatus(playerIndex) {
+            const player = gameState.players[playerIndex];
+            const statusElement = document.getElementById(`player-status-${playerIndex}`);
+            
+            if (player.action === 'walk') {
+                statusElement.textContent = `Listo para andar ${player.hasHeart ? '❤️' : ''}`;
+            } else if (player.action === 'stop') {
+                statusElement.textContent = `Se ha parado ${player.hasHeart ? '❤️' : ''}`;
+            } else {
+                statusElement.textContent = `Esperando acción ${player.hasHeart ? '❤️' : ''}`;
+            }
+        }
+        
+        // Siguiente turno
+        function nextTurn() {
+            if (gameState.gameOver) return;
+            
+            gameState.currentTurn++;
+            addToLog(`--- Turno ${gameState.currentTurn} ---`);
+            
+            // Sacar un dado de la bolsa
+            const diceIndex = Math.floor(Math.random() * gameState.bag.length);
+            const dice = gameState.bag[diceIndex];
+            gameState.bag.splice(diceIndex, 1);
+            gameState.drawnDice.push(dice);
+            
+            addToLog(`Dado sacado: ${dice}`);
+            
+            // Procesar el dado para cada jugador
+            gameState.players.forEach((player, index) => {
+                if (dice.startsWith('black')) {
+                    // Dado negro
+                    if (player.action === 'stop') {
+                        addToLog(`${player.name} está parado - dado negro no tiene efecto`);
+                    } else {
+                        // Jugador andando con dado negro
+                        gameState.usedBlackDice.push(dice);
+                        const blackDiceCount = gameState.usedBlackDice.length;
+                        
+                        // Tirar todos los dados negros acumulados
+                        let total = 0;
+                        gameState.usedBlackDice.forEach(d => {
+                            const values = DICE_CONFIG[d];
+                            const roll = values[Math.floor(Math.random() * values.length)];
+                            total += roll;
+                            addToLog(`${player.name} tira ${d}: resultado ${roll}`);
+                        });
+                        
+                        player.position += total;
+                        addToLog(`${player.name} avanza ${total} posiciones (total: ${player.position})`);
+                        
+                        // Si ya salieron los 3 dados negros, reiniciar la bolsa
+                        if (blackDiceCount >= 3) {
+                            resetBag();
+                        }
+                    }
+                } else {
+                    // Dado rojo
+                    if (player.action === 'stop') {
+                        if (!player.hasHeart) {
+                            player.hasHeart = true;
+                            addToLog(`${player.name} obtiene un corazón ❤️`);
+                        } else {
+                            addToLog(`${player.name} ya tiene un corazón - no hay efecto`);
+                        }
+                    } else {
+                        // Jugador andando con dado rojo
+                        if (player.hasHeart) {
+                            player.hasHeart = false;
+                            addToLog(`${player.name} pierde el corazón pero no sufre penalización`);
+                        } else {
+                            // Tirar todos los dados negros acumulados + el rojo
+                            let total = 0;
+                            const allDice = [...gameState.usedBlackDice, 'red'];
+                            
+                            allDice.forEach(d => {
+                                const values = DICE_CONFIG[d];
+                                const roll = values[Math.floor(Math.random() * values.length)];
+                                total += roll;
+                                addToLog(`${player.name} tira ${d}: resultado ${roll}`);
+                            });
+                            
+                            player.position = Math.max(0, player.position - total);
+                            addToLog(`${player.name} retrocede ${total} posiciones (total: ${player.position})`);
+                            
+                            // Reiniciar la bolsa después de usar el dado rojo
+                            resetBag();
+                        }
+                    }
+                    
+                    // El dado rojo siempre hace reiniciar la bolsa
+                    resetBag();
+                }
+            });
+            
+            // Verificar si algún jugador ganó
+            checkWinCondition();
+            
+            // Preparar para el siguiente turno
+            gameState.players.forEach(player => {
+                player.action = null;
+            });
+            
+            document.querySelectorAll('#player-controls button').forEach(btn => {
+                btn.disabled = false;
+            });
+            document.getElementById('next-turn').disabled = true;
+            
+            updateView();
+        }
+        
+        // Reiniciar la bolsa de dados
+        function resetBag() {
+            gameState.bag = ['black1', 'black2', 'black3', 'red'];
+            gameState.drawnDice = [];
+            gameState.usedBlackDice = [];
+            addToLog("Bolsa de dados reiniciada");
+        }
+        
+        // Verificar condición de victoria
+        function checkWinCondition() {
+            const winners = [];
+            
+            gameState.players.forEach(player => {
+                if (player.position >= CELL_COUNT - 1) {
+                    winners.push(player.name);
+                }
+            });
+            
+            if (winners.length > 0) {
+                gameState.gameOver = true;
+                addToLog(`🎉 ¡${winners.join(', ')} ha(n) ganado el juego! 🎉`);
+                
+                document.querySelectorAll('#player-controls button').forEach(btn => {
+                    btn.disabled = true;
+                });
+                document.getElementById('next-turn').disabled = true;
+            }
+        }
+        
+        // Actualizar la vista del juego
+        function updateView() {
+            // Limpiar todas las celdas
+            document.querySelectorAll('.cell').forEach(cell => {
+                cell.innerHTML = '';
+            });
+            
+            // Mostrar jugadores en sus posiciones
+            gameState.players.forEach((player, index) => {
+                const position = Math.min(player.position, CELL_COUNT - 1);
+                const cell = document.getElementById(`cell-${position}`);
+                
+                if (cell) {
+                    const playerElement = document.createElement('div');
+                    playerElement.className = `player ${player.color}`;
+                    playerElement.textContent = index + 1;
+                    
+                    if (player.hasHeart) {
+                        const heart = document.createElement('div');
+                        heart.className = 'heart';
+                        heart.textContent = '❤️';
+                        playerElement.appendChild(heart);
+                    }
+                    
+                    cell.appendChild(playerElement);
+                }
+            });
+            
+            // Actualizar la bolsa de dados en la UI
+            updateBagView();
+            
+            // Actualizar el estado de los jugadores
+            gameState.players.forEach((_, index) => {
+                updatePlayerStatus(index);
+            });
+        }
+        
+        // Actualizar la vista de la bolsa de dados
+        function updateBagView() {
+            const bagContent = document.getElementById('bag-content');
+            bagContent.innerHTML = '';
+            
+            gameState.bag.forEach(dice => {
+                const diceElement = document.createElement('div');
+                diceElement.className = `dice ${dice.startsWith('black') ? 'black-dice' : 'red-dice'}`;
+                diceElement.textContent = dice.startsWith('black') ? 'N' : 'R';
+                bagContent.appendChild(diceElement);
+            });
+        }
+        
+        // Añadir mensaje al registro del juego
+        function addToLog(message) {
+            const log = document.getElementById('game-log');
+            const entry = document.createElement('p');
+            entry.textContent = message;
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+        
+        // Inicializar el juego cuando se carga la página
+        window.onload = function() {
+            initGame();
+            document.getElementById('next-turn').onclick = nextTurn;
+        };
+    </script>
+</body>
+</html>
